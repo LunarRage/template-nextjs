@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { ErrorResponse, Wallet} from "../../../interfaces/index";
 
+
 const mysticOptions = (query: string) => ({
     method: 'POST',
     headers: {
@@ -9,9 +10,11 @@ const mysticOptions = (query: string) => ({
     body: JSON.stringify({ query })
   });
   
-  const mysticFetcher = async (query: string): Promise<Wallet | ErrorResponse> => {
+const mysticFetcher = async (query: string): Promise<Wallet | ErrorResponse> => {
+    
+    const endpoint = process.env.MYSTIC_GRAPHQL_ENDPOINT || "http://dnaoversight.gg/query/subgraphs/name/mystic-tracker";
     try {
-      const response = await fetch(process.env.MYSTIC_GRAPHQL_ENDPOINT, mysticOptions(query));
+      const response = await fetch(endpoint, mysticOptions(query));
   
       if (!response.ok) {
         // Handle non-200 HTTP status codes (e.g., 404 Not Found)
@@ -50,7 +53,6 @@ const mysticOptions = (query: string) => ({
       const response = await mysticFetcher(QUERYSTRING);
       res.status(200).json(response);
     } catch (error) {
-        console.log('muahahah');
       res.status(404).json(error as ErrorResponse);
     }
   }
